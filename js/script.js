@@ -40,13 +40,29 @@ async function getImage(width, height) {
   return response.url;
 }
 
+function ativarCarregando() {
+  const loaders = document.querySelectorAll(".loader");
+  loaders.forEach((loader) => {
+    loader.style.display = 'block';
+  })
+}
+
+function desativarCarregando() {
+  const loaders = document.querySelectorAll(".loader");
+  loaders.forEach((loader) => {
+    loader.style.display = 'none';
+  })
+}
+
 
 const baralho = document.getElementById("baralho");
 const tabuleiro = document.getElementById("tabuleiro");
 
 document.addEventListener("DOMContentLoaded", async () => {
+  ativarCarregando();
   let imageURL = await getImage(tabuleiro.offsetWidth, tabuleiro.offsetHeight);
   recortarImagem(imageURL, 5, 4).then((blocos) => {
+    desativarCarregando();
     while(blocos.length > 0) {
       let bloco = Math.floor(Math.random() * blocos.length);
       baralho.appendChild(blocos[bloco]);
