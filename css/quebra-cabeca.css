@@ -4,13 +4,8 @@
     padding: 0;
 }
 
-header {
-    background-color: #628B48;
-    padding: 10px 0px;
-    text-align: center;
-}
-
-.title {
+body {
+    background-color: #251605;
     font-family: "Bitcount Grid Double", system-ui;
     font-optical-sizing: auto;
     font-weight: 400;
@@ -20,6 +15,15 @@ header {
         "CRSV" 0.5,
         "ELSH" 0,
         "ELXP" 0;
+}
+
+header {
+    background-color: #628B48;
+    padding: 10px 0px;
+    text-align: center;
+}
+
+.title {
     font-size: 2.5rem;
     color: #eee;
 }
@@ -29,7 +33,6 @@ header {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #251605;
 }
 
 .tabuleiro {
@@ -73,4 +76,10 @@ header {
   50% {background-position: 100% 100%,100% 0,0    0   ,0 100%}
   90%,
   100%{background-position: 100% 100%,0 100%,0    0   ,100% 0}
+}
+
+footer {
+    background-color: #FFFa;
+    padding: 30px 10px;
+    text-align: center;
 }
