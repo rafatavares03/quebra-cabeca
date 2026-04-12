@@ -1,16 +1,16 @@
-function recortarImagem(imgSRC, blocosQTD) {
+function recortarImagem(imgSRC, linhas, colunas) {
   return new Promise((resolve) => {
     const img = new Image();
     img.src = imgSRC;
     img.onload = () => {
     const blocos = [];
     const dimension = {
-      width: img.width / blocosQTD,
-      height: img.height / blocosQTD
+      width: img.width / colunas,
+      height: img.height / linhas
     };
     
-    for(let i = 0; i < blocosQTD; i++) {
-      for(let j = 0; j < blocosQTD; j++) {
+    for(let i = 0; i < linhas; i++) {
+      for(let j = 0; j < colunas; j++) {
         const canva = document.createElement("canvas");
         canva.width = dimension.width;
         canva.height = dimension.height;
@@ -40,10 +40,13 @@ async function getImage(width, height) {
   return response.url;
 }
 
+
+const baralho = document.getElementById("baralho");
+const tabuleiro = document.getElementById("tabuleiro");
+
 document.addEventListener("DOMContentLoaded", async () => {
-  let imageURL = await getImage(800,800);
-  recortarImagem(imageURL, 5).then((blocos) => {
-    let baralho = document.getElementById("baralho");
+  let imageURL = await getImage(tabuleiro.offsetWidth, tabuleiro.offsetHeight);
+  recortarImagem(imageURL, 5, 4).then((blocos) => {
     while(blocos.length > 0) {
       let bloco = Math.floor(Math.random() * blocos.length);
       baralho.appendChild(blocos[bloco]);
@@ -51,4 +54,3 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 });
-
