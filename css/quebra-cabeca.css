@@ -56,8 +56,13 @@ header {
     width: 100%;
 }
 
-.bloco {
+.baralho .bloco {
     margin: 5px;
+    transition: box-shadow .5s ease-out;
+}
+
+.bloco:hover {
+    box-shadow: 0px 0px  15px 5px #0005;
 }
 
 /* HTML: <div class="loader"></div> */
