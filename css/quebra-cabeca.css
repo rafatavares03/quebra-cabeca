@@ -88,3 +88,26 @@ footer {
     padding: 30px 10px;
     text-align: center;
 }
+
+a, a:visited {
+    color: #47891e;
+}
+
+@media screen and (max-width: 770px) {
+    .tabuleiro {
+        width:750px;
+        height: 400px;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .title {
+        font-size: 2rem;
+    }
+    
+    .tabuleiro {
+        width: 350px;
+        height: 300px;
+    }
+}
+
