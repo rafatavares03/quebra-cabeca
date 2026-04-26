@@ -30,6 +30,44 @@ body {
         "ELXP" 0;
 }
 
+.resultado-modal {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #000a;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.resultado-modal.hide {
+    display: none;
+}
+
+.resultado-container {
+    background-color: #eee;
+    height: 80%;
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 30px;
+}
+
+.resultado-container h1 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    color: #47891e;
+}
+
+.resultado-container img {
+    width: 80%;
+}
+
 header {
     background-color: #628B48;
     padding: 10px 0px;

@@ -91,15 +91,17 @@ async function montarBaralho() {
 }
 
 
-function mostrarMensagem(texto) {
-  const msg = document.getElementById("mensagem");
+function mostrarResultado(texto) {
+  const modal = document.getElementById("resultado-modal");
+  const resultadoContainer = document.getElementById("resultado");
+  const h1 = document.createElement('h1');
+  h1.innerHTML = "Parabéns, você venceu!"
+  const img = document.createElement('img');
+  img.src = jogo.img
 
-  msg.textContent = texto;
-  msg.style.display = "block";
-
-  setTimeout(() => {
-    msg.style.display = "none";
-  }, 2000);
+  resultadoContainer.appendChild(h1);
+  resultadoContainer.appendChild(img);
+  modal.classList.remove('hide');
 }
 
 async function montarTabuleiro(){
@@ -139,7 +141,7 @@ async function montarTabuleiro(){
           celula.appendChild(bloco);
           
           if(verificarVitoria()) {
-            mostrarMensagem("Parabens!!!!!!!!!!!!");
+            mostrarResultado();
           }
         });
         //
@@ -235,6 +237,15 @@ document.querySelector("#nivel").addEventListener("change", async (e) => {
     await montarBaralho();
     await montarTabuleiro();
     desativarCarregamento();
+  }
+});
+
+document.querySelector("#resultado-modal").addEventListener("click", (e) => {
+  const modal = document.querySelector("#resultado-modal");
+  if(e.target === modal) {
+    const resultado = document.querySelector("#resultado");
+    resultado.innerHTML = '';
+    modal.classList.add('hide');
   }
 })
 
