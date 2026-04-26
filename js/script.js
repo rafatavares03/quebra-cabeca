@@ -80,6 +80,18 @@ async function montarBaralho(linhas, colunas) {
   }
 }
 
+
+function mostrarMensagem(texto) {
+  const msg = document.getElementById("mensagem");
+
+  msg.textContent = texto;
+  msg.style.display = "block";
+
+  setTimeout(() => {
+    msg.style.display = "none";
+  }, 2000);
+}
+
 async function montarTabuleiro(linhas, colunas){
     const ima = baralho.getElementsByClassName("bloco-baralho")[0];
 
@@ -107,6 +119,10 @@ async function montarTabuleiro(linhas, colunas){
           const bloco = document.getElementById(id);
 
           celula.appendChild(bloco);
+
+          if(verificarVitoria()) {
+              mostrarMensagem("Parabens!!!!!!!!!!!!");
+          }
         });
         //
 
@@ -120,32 +136,63 @@ async function montarTabuleiro(linhas, colunas){
 }
 
 
+function verificarVitoria() {
+  const tabu = document.querySelectorAll(".bloco-tabuleiro");
+
+  for (let celula of tabu) {
+    if (celula.children.length === 0) {
+      return false;
+    }
+
+    const bloco = celula.children[0];
+
+    if ((Number(bloco.id) + 1) !== Number(celula.id)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+
 async function iniciarJogo(){
   const linhas = 5;
   const colunas = 4;
   await montarBaralho(linhas, colunas);
   await montarTabuleiro(linhas, colunas);
+  baralho.addEventListener("dragover", (e) => {
+    e.preventDefault();
+  });
+
+  baralho.addEventListener("drop", (e) => {
+    e.preventDefault();
+
+    const id = e.dataTransfer.getData("text/plain");
+    const bloco = document.getElementById(id);
+
+    baralho.appendChild(bloco);
+  });
+  
+  // resolverJogo();
 }
 
 
+function resolverJogo() {
+  const celulas = document.querySelectorAll(".bloco-tabuleiro");
+
+  celulas.forEach((celula) => {
+    const idEsperado = Number(celula.id) - 1;
+    const bloco = document.getElementById(idEsperado);
+
+    if (bloco) {
+      celula.appendChild(bloco);
+    }
+  });
+}
 
 
 const baralho = document.getElementById("baralho");
 const tabuleiro = document.getElementById("tabuleiro");
-
-baralho.addEventListener("dragover", (e) => {
-  e.preventDefault();
-});
-
-baralho.addEventListener("drop", (e) => {
-  e.preventDefault();
-
-  const id = e.dataTransfer.getData("text/plain");
-  const bloco = document.getElementById(id);
-
-  baralho.appendChild(bloco);
-});
-
 
 
 document.addEventListener("DOMContentLoaded", iniciarJogo);

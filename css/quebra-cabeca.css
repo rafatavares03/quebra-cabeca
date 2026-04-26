@@ -4,6 +4,19 @@
     padding: 0;
 }
 
+#mensagem {
+    position: fixed;
+    top: 200px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #000;
+    color: #fff;
+    padding: 35px 45px;
+    border-radius: 5px;
+    display: none;
+}
+
+
 body {
     background-color: #251605;
     font-family: "Bitcount Grid Double", system-ui;
