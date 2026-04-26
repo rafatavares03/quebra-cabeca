@@ -1,12 +1,18 @@
-function recortarImagem(imgSRC, linhas, colunas) {
+const niveis = [[3,4],[6,4],[10,10]];
+
+let nivelAtual = 2;
+
+function recortarImagem(imgSRC) {
+  const linhas = niveis[nivelAtual][0];
+  const colunas = niveis[nivelAtual][1];
   return new Promise((resolve) => {
     const img = new Image();
     img.src = imgSRC;
     img.onload = () => {
     const blocos = [];
     const dimension = {
+      height: img.height / linhas,
       width: img.width / colunas,
-      height: img.height / linhas
     };
     
     let idCelula = 0;
@@ -14,7 +20,7 @@ function recortarImagem(imgSRC, linhas, colunas) {
       for(let j = 0; j < colunas; j++) {
         const canva = document.createElement("canvas");
         canva.id = idCelula;
-        canva.classList.add("bloco-baralho");
+        canva.classList.add("bloco");
         
         canva.draggable = true;
 
@@ -66,12 +72,8 @@ function desativarCarregamento() {
 }
 
 async function montarBaralho(linhas, colunas) {
-  ativarCarregamento();
-
   let imageURL = await getImage(tabuleiro.offsetWidth, tabuleiro.offsetHeight);
   const blocos = await recortarImagem(imageURL, linhas, colunas);
-
-  desativarCarregamento();
 
   while (blocos.length > 0) {
     let bloco = Math.floor(Math.random() * blocos.length);
@@ -92,52 +94,63 @@ function mostrarMensagem(texto) {
   }, 2000);
 }
 
-async function montarTabuleiro(linhas, colunas){
-    const ima = baralho.getElementsByClassName("bloco-baralho")[0];
+async function montarTabuleiro(){
+    const peca = baralho.getElementsByClassName("bloco")[0];
 
-    const largura = ima.width;
-    const altura = ima.height;
-
+    const linhas = niveis[nivelAtual][0];
+    const colunas = niveis[nivelAtual][1];
+    const largura = peca.width;
+    const altura = peca.height;
+    
     let idCelula = 1;
-
+    
     for(let i = 0; i < linhas; i++) {
       for(let j = 0; j < colunas; j++) {
         const celula = document.createElement("div");
 
         celula.id = idCelula;
-        celula.classList.add("bloco-tabuleiro");
-
+        celula.classList.add("tabuleiro-container");
+        
+        celula.addEventListener("dragleave", () => {
+          celula.classList.remove("destacado");
+        });
+        
         // 
         celula.addEventListener("dragover", (e) => {
+          celula.classList.add("destacado");
           e.preventDefault();
         });
 
         celula.addEventListener("drop", (e) => {
+          celula.classList.remove("destacado");
           e.preventDefault();
-
+          
           const id = e.dataTransfer.getData("text/plain");
           const bloco = document.getElementById(id);
-
+          
           celula.appendChild(bloco);
-
+          
           if(verificarVitoria()) {
-              mostrarMensagem("Parabens!!!!!!!!!!!!");
+            mostrarMensagem("Parabens!!!!!!!!!!!!");
           }
         });
         //
-
+        
         celula.style.width = largura + "px";
         celula.style.height = altura + "px";
-
+        
         tabuleiro.appendChild(celula);
         idCelula+=2;
       }
     }
+    tabuleiro.style.display = "grid";
+    tabuleiro.style.gridTemplateRows = `repeat(${linhas}, 1fr)`;
+    tabuleiro.style.gridTemplateColumns = `repeat(${colunas}, 1fr)`;
 }
 
 
 function verificarVitoria() {
-  const tabu = document.querySelectorAll(".bloco-tabuleiro");
+  const tabu = document.querySelectorAll(".tabuleiro-container");
 
   for (let celula of tabu) {
     if (celula.children.length === 0) {
@@ -158,8 +171,10 @@ function verificarVitoria() {
 async function iniciarJogo(){
   const linhas = 5;
   const colunas = 4;
-  await montarBaralho(linhas, colunas);
-  await montarTabuleiro(linhas, colunas);
+  ativarCarregamento();
+  await montarBaralho();
+  await montarTabuleiro();
+  desativarCarregamento();
   baralho.addEventListener("dragover", (e) => {
     e.preventDefault();
   });

@@ -52,20 +52,31 @@ header {
     width: 1000px;
     height: 500px;
 
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* colunas */
-    grid-template-rows: repeat(5, 1fr);    /* linhas */
-
     background-color: #628B4855;
     border-radius: 3px;
     margin: 20px;
 }
 
-.bloco-tabuleiro {
+.tabuleiro.flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tabuleiro-container {
     border: 1px solid black;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.tabuleiro-container:hover,
+.tabuleiro-container.destacado {
+    background-color: #eee1;
+}
+
+.tabuleiro-container.destacado .bloco {
+    filter: contrast(200%);
 }
 
 .baralho {
@@ -81,13 +92,17 @@ header {
     width: 100%;
 }
 
-.baralho .bloco-baralho {
+.baralho .bloco {
     margin: 5px;
     transition: box-shadow .5s ease-out;
 }
 
-.bloco-baralho:hover {
+.baralho .bloco:hover {
     box-shadow: 0px 0px  15px 5px #0005;
+}
+
+.tabuleiro-container .bloco:hover {
+    filter: brightness(1.5);
 }
 
 /* HTML: <div class="loader"></div> */
