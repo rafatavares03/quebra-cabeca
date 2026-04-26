@@ -71,3 +71,7 @@ const baralho = document.getElementById("baralho");
 const tabuleiro = document.getElementById("tabuleiro");
 
 document.addEventListener("DOMContentLoaded", montarBaralho());
+
+
+
+
