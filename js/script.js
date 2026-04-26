@@ -9,12 +9,22 @@ function recortarImagem(imgSRC, linhas, colunas) {
       height: img.height / linhas
     };
     
+    let idCelula = 0;
     for(let i = 0; i < linhas; i++) {
       for(let j = 0; j < colunas; j++) {
         const canva = document.createElement("canvas");
+        canva.id = idCelula;
+        canva.classList.add("bloco-baralho");
+        
+        canva.draggable = true;
+
+        canva.addEventListener("dragstart", (e) => {
+          e.dataTransfer.setData("text/plain", canva.id);
+          e.dataTransfer.effectAllowed = "move";
+        });
+
         canva.width = dimension.width;
         canva.height = dimension.height;
-        canva.classList.add("bloco");
 
         const canvaContext = canva.getContext("2d");
         canvaContext.drawImage(
@@ -26,6 +36,7 @@ function recortarImagem(imgSRC, linhas, colunas) {
         );
         
         blocos.push(canva);
+        idCelula+=2;
       }
     }
     
@@ -54,23 +65,90 @@ function desativarCarregamento() {
   })
 }
 
-async function montarBaralho() {
+async function montarBaralho(linhas, colunas) {
   ativarCarregamento();
+
   let imageURL = await getImage(tabuleiro.offsetWidth, tabuleiro.offsetHeight);
-  recortarImagem(imageURL, 5, 4).then((blocos) => {
-    desativarCarregamento();
-    while(blocos.length > 0) {
-      let bloco = Math.floor(Math.random() * blocos.length);
-      baralho.appendChild(blocos[bloco]);
-      blocos.splice(bloco, 1);
-    }
-  });
+  const blocos = await recortarImagem(imageURL, linhas, colunas);
+
+  desativarCarregamento();
+
+  while (blocos.length > 0) {
+    let bloco = Math.floor(Math.random() * blocos.length);
+    baralho.appendChild(blocos[bloco]);
+    blocos.splice(bloco, 1);
+  }
 }
+
+async function montarTabuleiro(linhas, colunas){
+    const ima = baralho.getElementsByClassName("bloco-baralho")[0];
+
+    const largura = ima.getBoundingClientRect().width;
+    const altura = ima.getBoundingClientRect().height;
+
+    let idCelula = 1;
+
+    for(let i = 0; i < linhas; i++) {
+      for(let j = 0; j < colunas; j++) {
+        const celula = document.createElement("div");
+
+        celula.id = idCelula;
+        celula.classList.add("bloco-tabuleiro");
+
+        // 
+        celula.addEventListener("dragover", (e) => {
+          e.preventDefault();
+        });
+
+        celula.addEventListener("drop", (e) => {
+          e.preventDefault();
+
+          const id = e.dataTransfer.getData("text/plain");
+          const bloco = document.getElementById(id);
+
+          celula.appendChild(bloco);
+        });
+        //
+
+        celula.style.width = largura + "px";
+        celula.style.height = altura + "px";
+
+        tabuleiro.appendChild(celula);
+        idCelula+=2;
+      }
+    }
+}
+
+
+async function iniciarJogo(){
+  const linhas = 5;
+  const colunas = 4;
+  await montarBaralho(linhas, colunas);
+  await montarTabuleiro(linhas, colunas);
+}
+
+
+
 
 const baralho = document.getElementById("baralho");
 const tabuleiro = document.getElementById("tabuleiro");
 
-document.addEventListener("DOMContentLoaded", montarBaralho());
+baralho.addEventListener("dragover", (e) => {
+  e.preventDefault();
+});
+
+baralho.addEventListener("drop", (e) => {
+  e.preventDefault();
+
+  const id = e.dataTransfer.getData("text/plain");
+  const bloco = document.getElementById(id);
+
+  baralho.appendChild(bloco);
+});
+
+
+
+document.addEventListener("DOMContentLoaded", iniciarJogo);
 
 
 
