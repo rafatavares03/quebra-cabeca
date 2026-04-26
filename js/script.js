@@ -83,8 +83,8 @@ async function montarBaralho(linhas, colunas) {
 async function montarTabuleiro(linhas, colunas){
     const ima = baralho.getElementsByClassName("bloco-baralho")[0];
 
-    const largura = ima.getBoundingClientRect().width;
-    const altura = ima.getBoundingClientRect().height;
+    const largura = ima.width;
+    const altura = ima.height;
 
     let idCelula = 1;
 
