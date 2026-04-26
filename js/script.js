@@ -1,18 +1,26 @@
-const niveis = [[3,4],[6,4],[10,10]];
+const baralho = document.getElementById("baralho");
+const tabuleiro = document.getElementById("tabuleiro");
+const niveis = [[5,3],[6,4],[10,10]];
 
-let nivelAtual = 2;
+let nivelAtual = 1;
+const jogo = {
+  img: null
+}
 
 function recortarImagem(imgSRC) {
   const linhas = niveis[nivelAtual][0];
   const colunas = niveis[nivelAtual][1];
   return new Promise((resolve) => {
+    if(jogo.img === null) {
+      reject("Imagem não carregada");
+    } 
     const img = new Image();
-    img.src = imgSRC;
+    img.src = jogo.img;
     img.onload = () => {
     const blocos = [];
     const dimension = {
-      height: img.height / linhas,
-      width: img.width / colunas,
+      height: Math.floor(tabuleiro.offsetHeight / linhas),
+      width: Math.floor(tabuleiro.offsetWidth / colunas),
     };
     
     let idCelula = 0;
@@ -71,9 +79,8 @@ function desativarCarregamento() {
   })
 }
 
-async function montarBaralho(linhas, colunas) {
-  let imageURL = await getImage(tabuleiro.offsetWidth, tabuleiro.offsetHeight);
-  const blocos = await recortarImagem(imageURL, linhas, colunas);
+async function montarBaralho() {
+  const blocos = await recortarImagem();
 
   while (blocos.length > 0) {
     let bloco = Math.floor(Math.random() * blocos.length);
@@ -144,8 +151,19 @@ async function montarTabuleiro(){
       }
     }
     tabuleiro.style.display = "grid";
-    tabuleiro.style.gridTemplateRows = `repeat(${linhas}, 1fr)`;
-    tabuleiro.style.gridTemplateColumns = `repeat(${colunas}, 1fr)`;
+    tabuleiro.style.gap = "0";
+  tabuleiro.style.gridTemplateRows = `repeat(${linhas}, ${altura}px)`;
+  tabuleiro.style.gridTemplateColumns = `repeat(${colunas}, ${largura}px)`;
+}
+
+function limparBaralho() {
+  while(baralho.children.length > 1) {
+    baralho.removeChild(baralho.lastChild);
+  }
+}
+
+function limparTabuleiro() {
+  tabuleiro.innerHTML = ""
 }
 
 
@@ -169,12 +187,12 @@ function verificarVitoria() {
 
 
 async function iniciarJogo(){
-  const linhas = 5;
-  const colunas = 4;
   ativarCarregamento();
+  jogo.img = await getImage(tabuleiro.offsetWidth, tabuleiro.offsetHeight);
   await montarBaralho();
   await montarTabuleiro();
   desativarCarregamento();
+
   baralho.addEventListener("dragover", (e) => {
     e.preventDefault();
   });
@@ -205,13 +223,16 @@ function resolverJogo() {
   });
 }
 
-
-const baralho = document.getElementById("baralho");
-const tabuleiro = document.getElementById("tabuleiro");
-
-
 document.addEventListener("DOMContentLoaded", iniciarJogo);
-
-
-
-
+document.querySelector("#nivel").addEventListener("change", async (e) => {
+  const nivelSelecionado = e.target.value;
+  if(nivelSelecionado !== nivelAtual) {
+    ativarCarregamento();
+    nivelAtual = nivelSelecionado;
+    limparBaralho();
+    limparTabuleiro();
+    await montarBaralho();
+    await montarTabuleiro();
+    desativarCarregamento();
+  }
+})
