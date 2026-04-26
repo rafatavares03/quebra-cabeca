@@ -1,6 +1,7 @@
 const baralho = document.getElementById("baralho");
 const tabuleiro = document.getElementById("tabuleiro");
 const niveis = [[5,3],[6,4],[10,10]];
+let arrastando = false;
 
 let nivelAtual = 1;
 const jogo = {
@@ -236,3 +237,24 @@ document.querySelector("#nivel").addEventListener("change", async (e) => {
     desativarCarregamento();
   }
 })
+
+document.addEventListener("dragstart", () => {
+  arrastando = true;
+});
+
+document.addEventListener("dragend", () => {
+  arrastando = false;
+});
+
+document.addEventListener("dragover", (e) => {
+  if(!arrastando) return;
+
+  const margem = 150;
+  const velocidade = 5;
+
+  if (e.clientY < margem) {
+    window.scrollBy(0, -velocidade);
+  } else if (window.innerHeight - e.clientY < margem) {
+    window.scrollBy(0, velocidade);
+  }
+});
