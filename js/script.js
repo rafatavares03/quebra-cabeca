@@ -7,63 +7,107 @@ let nivelAtual = 1;
 const jogo = {
   img: null
 }
-
-function recortarImagem(imgSRC) {
+function recortarImagem() {
   const linhas = niveis[nivelAtual][0];
   const colunas = niveis[nivelAtual][1];
-  return new Promise((resolve) => {
-    if(jogo.img === null) {
+
+  return new Promise((resolve, reject) => {
+    if (!jogo.img) {
       reject("Imagem não carregada");
-    } 
+      return;
+    }
+
     const img = new Image();
     img.src = jogo.img;
+
     img.onload = () => {
-    const blocos = [];
-    const dimension = {
-      height: Math.floor(tabuleiro.offsetHeight / linhas),
-      width: Math.floor(tabuleiro.offsetWidth / colunas),
-    };
-    
-    let idCelula = 0;
-    for(let i = 0; i < linhas; i++) {
-      for(let j = 0; j < colunas; j++) {
-        const canva = document.createElement("canvas");
-        canva.id = idCelula;
-        canva.classList.add("bloco");
-        
-        canva.draggable = true;
-
-        canva.addEventListener("dragstart", (e) => {
-          e.dataTransfer.setData("text/plain", canva.id);
-          e.dataTransfer.effectAllowed = "move";
-        });
-
-        canva.width = dimension.width;
-        canva.height = dimension.height;
-
-        const canvaContext = canva.getContext("2d");
-        canvaContext.drawImage(
-          img,
-          dimension.width * j, dimension.height * i,
-          dimension.width, dimension.height,
-          0, 0,
-          dimension.width, dimension.height
-        );
-        
-        blocos.push(canva);
-        idCelula+=2;
+      const proporcao = img.naturalWidth / img.naturalHeight;
+      const larguraMax = tabuleiro.parentElement.offsetWidth;
+      const alturaMax = tabuleiro.parentElement.offsetHeight;
+      let larguraTabuleiro = Math.min(larguraMax, alturaMax * proporcao);
+      let alturaTabuleiro = larguraTabuleiro / proporcao;
+      // aplica
+      tabuleiro.style.width = `${larguraTabuleiro}px`;
+      tabuleiro.style.height = `${alturaTabuleiro}px`;
+      if (alturaTabuleiro > alturaMax) {
+        alturaTabuleiro = alturaMax;
+        larguraTabuleiro = alturaTabuleiro * proporcao;
       }
-    }
-    
-    resolve(blocos);
-  }
-  })
+
+      tabuleiro.style.width = `${larguraTabuleiro}px`;
+      tabuleiro.style.height = `${alturaTabuleiro}px`;
+
+      const larguraOrigem = img.naturalWidth / colunas;
+      const alturaOrigem = img.naturalHeight / linhas;
+
+      const larguraDestino = larguraTabuleiro / colunas;
+      const alturaDestino = alturaTabuleiro / linhas;
+
+      const blocos = [];
+      let idCelula = 0;
+
+      for (let i = 0; i < linhas; i++) {
+        for (let j = 0; j < colunas; j++) {
+          const canva = document.createElement("canvas");
+          canva.id = idCelula;
+          canva.classList.add("bloco");
+          canva.draggable = true;
+
+          canva.addEventListener("dragstart", (e) => {
+            e.dataTransfer.setData("text/plain", canva.id);
+            e.dataTransfer.effectAllowed = "move";
+
+            e.dataTransfer.setDragImage(canva, canva.width / 2, canva.height / 2);
+          });
+
+          // 🔹 IMPORTANTE: usar destino no canvas
+          canva.width = larguraDestino;
+          canva.height = alturaDestino;
+
+          const ctx = canva.getContext("2d");
+          ctx.fillStyle = "#fff";
+          ctx.fillRect(0, 0, canva.width, canva.height);
+          ctx.drawImage(
+            img,
+            larguraOrigem * j,
+            alturaOrigem * i,
+            larguraOrigem,
+            alturaOrigem,
+            0,
+            0,
+            larguraDestino,
+            alturaDestino
+          );
+
+          blocos.push(canva);
+          idCelula += 2;
+        }
+      }
+
+      resolve(blocos);
+    };
+
+    img.onerror = () => reject("Erro ao carregar imagem");
+  });
 }
 
 async function getImage(width, height) {
-  const url = `https://picsum.photos/${width}/${height}`;
-  const response = await fetch(url);
-  return response.url;
+  const uploader = document.querySelector(".uploader");
+  const curFiles = uploader.files;
+  
+  return new Promise(async (resolve) => {
+    const img = new Image();
+    let url;
+    if (curFiles.length === 0) {
+      url = `https://picsum.photos/${width}/${height}`;
+      const response = await fetch(url);
+      resolve(response.url);
+    } else {
+      url = URL.createObjectURL(curFiles[0]);
+      img.onload = () => resolve(url);
+    }
+    img.src = url;
+  });
 }
 
 function ativarCarregamento() {
@@ -82,7 +126,6 @@ function desativarCarregamento() {
 
 async function montarBaralho() {
   const blocos = await recortarImagem();
-
   while (blocos.length > 0) {
     let bloco = Math.floor(Math.random() * blocos.length);
     baralho.appendChild(blocos[bloco]);
@@ -190,11 +233,6 @@ function verificarVitoria() {
 
 
 async function iniciarJogo(){
-  ativarCarregamento();
-  jogo.img = await getImage(tabuleiro.offsetWidth, tabuleiro.offsetHeight);
-  await montarBaralho();
-  await montarTabuleiro();
-  desativarCarregamento();
 
   baralho.addEventListener("dragover", (e) => {
     e.preventDefault();
@@ -205,11 +243,24 @@ async function iniciarJogo(){
 
     const id = e.dataTransfer.getData("text/plain");
     const bloco = document.getElementById(id);
-
+atualizar_tela
     baralho.appendChild(bloco);
   });
+  const uploader = document.querySelector(".uploader");
+  uploader.addEventListener("change", () => atualizar_tela())
+  atualizar_tela()
+
   
   // resolverJogo();
+}
+async function atualizar_tela() {
+  ativarCarregamento();
+  jogo.img = await getImage(tabuleiro.offsetWidth, tabuleiro.offsetHeight);
+  limparBaralho();
+  limparTabuleiro();
+  await montarBaralho();
+  await montarTabuleiro();
+  desativarCarregamento();
 }
 
 
@@ -230,13 +281,7 @@ document.addEventListener("DOMContentLoaded", iniciarJogo);
 document.querySelector("#nivel").addEventListener("change", async (e) => {
   const nivelSelecionado = e.target.value;
   if(nivelSelecionado !== nivelAtual) {
-    ativarCarregamento();
-    nivelAtual = nivelSelecionado;
-    limparBaralho();
-    limparTabuleiro();
-    await montarBaralho();
-    await montarTabuleiro();
-    desativarCarregamento();
+    atualizar_tela()
   }
 });
 

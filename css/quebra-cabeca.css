@@ -78,6 +78,9 @@ header {
 }
 
 .header-container {
+    border-top: 20px;
+    display: flex;
+    justify-content:space-between;
     width: 100%;
     max-width: 1300px;
     position: relative;
@@ -89,15 +92,12 @@ header {
 }
 
 .nivel {
-    position: absolute;
-    right: 20px;
     outline: 0;
     font-family: inherit;
     font-size: 16px;
     text-align: center;
-    top: 50%;
+    border-left: 20px;
     transform: translateY(-50%);
-    border: 0;
     border-radius: 30px;
     padding: 5px 10px;
 }
@@ -133,12 +133,11 @@ header {
 
 .tabuleiro-container:hover,
 .tabuleiro-container.destacado {
-    background-color: #eee1;
+    background-color: transparent;
+    outline: 2px dashed #fff8;
+    background-color: #ffffff10;
 }
 
-.tabuleiro-container.destacado .bloco {
-    filter: contrast(200%);
-}
 
 .baralho {
     align-items: center;
@@ -163,7 +162,7 @@ header {
 }
 
 .tabuleiro-container .bloco:hover {
-    filter: brightness(1.5);
+    filter: brightness(1.1);
 }
 
 /* HTML: <div class="loader"></div> */
