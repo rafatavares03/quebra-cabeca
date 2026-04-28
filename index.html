@@ -13,10 +13,13 @@
     <section class="resultado-modal modal hide" id="resultado-modal">
         <div class="resultado-container modal-container" id="resultado"></div>
     </section>
-    <section class="trocar-img-modal modal hide">
-        <div class="modal-container">
-            <input type="file" class="uploader" id="uploader" name="uploader" accept="image/png" class="nivel" />
-            <label for="uploader" class="uploader">Substituir imagem no campo acima</label>
+    <section class="trocar-img-modal modal">
+        <div class="modal-container trocar-img-container">
+            <label for="trocar-img-btn">Trocar por uma imagem aleatória</label>
+            <input type="button" id="trocar-img-btn" value="Trocar">
+            <p>OU</p>
+            <label for="uploader">Carregar uma imagem personalizada!</label>
+            <input type="file" class="uploader" id="uploader" name="uploader" accept="image/*" />
         </div>
     </section>
     <header>

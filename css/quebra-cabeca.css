@@ -48,6 +48,9 @@ body {
 }
 
 .modal-container {
+    font-family: inherit;
+    font-size: 1.2rem;
+    color: #47891e;
     background-color: #eee;
     height: 80%;
     width: 30%;
@@ -61,13 +64,31 @@ body {
 .resultado-container h1 {
     font-size: 1.3rem;
     margin-bottom: 20px;
-    color: #47891e;
 }
 
 .resultado-container img {
     width: 80%;
 }
 
+.trocar-img-container {
+    padding: 30px 0px;
+}
+
+.trocar-img-container label,
+.trocar-img-container input,
+.trocar-img-container p {
+    margin: 10px;
+}
+
+#trocar-img-btn {
+    font-family: inherit;
+    padding: 50px;
+    background-color: #628B48;
+    color: #eee;
+    font-size: 2rem;
+    border-radius: 20px;
+    cursor: pointer;
+}
 
 header {
     background-color: #628B48;
@@ -104,7 +125,11 @@ header {
 
 .uploader {
     font-size: 1rem;
+    font-family: inherit;
+    padding: 50px 10px;
+    border: 1px #628B48 solid;
     color: #47891e;
+    border-radius: 20px;
 }
 
 .trocar-img {

@@ -93,6 +93,7 @@ async function montarBaralho() {
 function mostrarResultado(texto) {
   const modal = document.getElementById("resultado-modal");
   const resultadoContainer = document.getElementById("resultado");
+  resultadoContainer.innerHTML = '';
   const h1 = document.createElement('h1');
   h1.innerHTML = "Parabéns, você venceu!"
   const img = document.createElement('img');
@@ -284,17 +285,13 @@ document.querySelector("#uploader").addEventListener("change", async () => {
 
   const modal = document.querySelector(".trocar-img-modal");
   modal.classList.add('hide');
-})
-/*
-document.querySelector("#resultado-modal").addEventListener("click", (e) => {
-  const modal = document.querySelector("#resultado-modal");
-  if(e.target === modal) {
-    const resultado = document.querySelector("#resultado");
-    resultado.innerHTML = '';
-    modal.classList.add('hide');
-  }
 });
-*/
+
+document.querySelector("#trocar-img-btn").addEventListener("click", () => {
+  atualizarTela(true);
+  const modal = document.querySelector(".trocar-img-modal");
+  modal.classList.add('hide');
+})
 
 document.addEventListener("dragstart", () => {
   arrastando = true;
