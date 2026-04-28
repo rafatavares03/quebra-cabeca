@@ -280,6 +280,11 @@ document.querySelector("#trocar-img").addEventListener("click", () => {
   modal.classList.remove('hide');
 });
 
+document.querySelector('#config').addEventListener("click", () => {
+  const modal = document.querySelector(".trocar-img-modal");
+  modal.classList.remove('hide');
+})
+
 document.querySelector("#uploader").addEventListener("change", async () => {
   const arquivo = event.target.files[0];
   if(!arquivo) return;

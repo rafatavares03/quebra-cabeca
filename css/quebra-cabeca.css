@@ -40,7 +40,7 @@ body {
     color: #47891e;
     background-color: #eee;
     height: 80%;
-    width: 30%;
+    width: 40%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -157,6 +157,10 @@ header {
     cursor: pointer;
 }
 
+.config {
+    display: none;
+}
+
 .container {
     display: flex;
     flex-direction: column;
@@ -256,6 +260,22 @@ a, a:visited {
         width:750px;
         height: 400px;
     }
+
+    .trocar-img {
+        display: none;
+    }
+
+    .nivel {
+        padding: 0;
+    }
+
+    .config {
+        display: block;
+    }
+
+    .modal-container {
+        width: 85%;
+    }
 }
 
 @media screen and (max-width: 450px) {
@@ -266,6 +286,25 @@ a, a:visited {
     .tabuleiro {
         width: 350px;
         height: 300px;
+    }
+
+    .trocar-img {
+        display: none;
+    }
+
+    .nivel {
+        display: none;
+    }
+
+    .trocar-img-btn {
+        padding: 30px;
+    }
+
+    .uploader {
+        padding: 0;
+        word-wrap: break-word;
+        word-break: break-all;
+        max-width: 100%;
     }
 }
 
