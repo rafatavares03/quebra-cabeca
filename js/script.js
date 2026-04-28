@@ -137,26 +137,39 @@ async function montarTabuleiro(){
           celula.classList.remove("destacado");
         });
         
-        // 
         celula.addEventListener("dragover", (e) => {
           celula.classList.add("destacado");
           e.preventDefault();
         });
 
         celula.addEventListener("drop", (e) => {
-          celula.classList.remove("destacado");
           e.preventDefault();
-          
+          celula.classList.remove("destacado");
+
           const id = e.dataTransfer.getData("text/plain");
           const bloco = document.getElementById(id);
-          
-          celula.appendChild(bloco);
-          
-          if(verificarVitoria()) {
+
+          const origem = bloco.parentElement;
+
+          if (!celula.hasChildNodes()) {
+            celula.appendChild(bloco);
+          } else {
+            const blocoOriginal = celula.children[0];
+            if (origem.classList.contains("tabuleiro-container")) {
+              origem.appendChild(blocoOriginal);
+              celula.appendChild(bloco);
+            }
+
+            else if (origem === baralho) {
+              baralho.appendChild(blocoOriginal);
+              celula.appendChild(bloco);
+            }
+          }
+
+          if (verificarVitoria()) {
             mostrarResultado();
           }
         });
-        //
         
         celula.style.width = largura + "px";
         celula.style.height = altura + "px";
@@ -246,6 +259,19 @@ document.querySelector("#nivel").addEventListener("change", async (e) => {
     desativarCarregamento();
   }
 });
+
+document.querySelectorAll(".modal").forEach((modal) => {
+  modal.addEventListener("click", (e) => {
+    if(e.target === modal) {
+      modal.classList.add('hide');
+    }
+  })
+})
+
+document.querySelector("#trocar-img").addEventListener("click", () => {
+  const modal = document.querySelector(".trocar-img-modal");
+  modal.classList.remove('hide');
+})
 
 document.querySelector("#resultado-modal").addEventListener("click", (e) => {
   const modal = document.querySelector("#resultado-modal");
