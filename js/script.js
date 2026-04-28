@@ -7,88 +7,57 @@ let nivelAtual = 1;
 const jogo = {
   img: null
 }
-function recortarImagem() {
+
+function recortarImagem(imgSRC) {
   const linhas = niveis[nivelAtual][0];
   const colunas = niveis[nivelAtual][1];
-
-  return new Promise((resolve, reject) => {
-    if (!jogo.img) {
+  return new Promise((resolve) => {
+    if(jogo.img === null) {
       reject("Imagem não carregada");
-      return;
-    }
-
+    } 
     const img = new Image();
     img.src = jogo.img;
-
     img.onload = () => {
-      const proporcao = img.naturalWidth / img.naturalHeight;
-      const larguraMax = tabuleiro.parentElement.offsetWidth;
-      const alturaMax = tabuleiro.parentElement.offsetHeight;
-      let larguraTabuleiro = Math.min(larguraMax, alturaMax * proporcao);
-      let alturaTabuleiro = larguraTabuleiro / proporcao;
-      // aplica
-      tabuleiro.style.width = `${larguraTabuleiro}px`;
-      tabuleiro.style.height = `${alturaTabuleiro}px`;
-      if (alturaTabuleiro > alturaMax) {
-        alturaTabuleiro = alturaMax;
-        larguraTabuleiro = alturaTabuleiro * proporcao;
-      }
-
-      tabuleiro.style.width = `${larguraTabuleiro}px`;
-      tabuleiro.style.height = `${alturaTabuleiro}px`;
-
-      const larguraOrigem = img.naturalWidth / colunas;
-      const alturaOrigem = img.naturalHeight / linhas;
-
-      const larguraDestino = larguraTabuleiro / colunas;
-      const alturaDestino = alturaTabuleiro / linhas;
-
-      const blocos = [];
-      let idCelula = 0;
-
-      for (let i = 0; i < linhas; i++) {
-        for (let j = 0; j < colunas; j++) {
-          const canva = document.createElement("canvas");
-          canva.id = idCelula;
-          canva.classList.add("bloco");
-          canva.draggable = true;
-
-          canva.addEventListener("dragstart", (e) => {
-            e.dataTransfer.setData("text/plain", canva.id);
-            e.dataTransfer.effectAllowed = "move";
-
-            e.dataTransfer.setDragImage(canva, canva.width / 2, canva.height / 2);
-          });
-
-          // 🔹 IMPORTANTE: usar destino no canvas
-          canva.width = larguraDestino;
-          canva.height = alturaDestino;
-
-          const ctx = canva.getContext("2d");
-          ctx.fillStyle = "#fff";
-          ctx.fillRect(0, 0, canva.width, canva.height);
-          ctx.drawImage(
-            img,
-            larguraOrigem * j,
-            alturaOrigem * i,
-            larguraOrigem,
-            alturaOrigem,
-            0,
-            0,
-            larguraDestino,
-            alturaDestino
-          );
-
-          blocos.push(canva);
-          idCelula += 2;
-        }
-      }
-
-      resolve(blocos);
+    const blocos = [];
+    const dimension = {
+      height: Math.floor(tabuleiro.offsetHeight / linhas),
+      width: Math.floor(tabuleiro.offsetWidth / colunas),
     };
+    
+    let idCelula = 0;
+    for(let i = 0; i < linhas; i++) {
+      for(let j = 0; j < colunas; j++) {
+        const canva = document.createElement("canvas");
+        canva.id = idCelula;
+        canva.classList.add("bloco");
+        
+        canva.draggable = true;
 
-    img.onerror = () => reject("Erro ao carregar imagem");
-  });
+        canva.addEventListener("dragstart", (e) => {
+          e.dataTransfer.setData("text/plain", canva.id);
+          e.dataTransfer.effectAllowed = "move";
+        });
+
+        canva.width = dimension.width;
+        canva.height = dimension.height;
+
+        const canvaContext = canva.getContext("2d");
+        canvaContext.drawImage(
+          img,
+          dimension.width * j, dimension.height * i,
+          dimension.width, dimension.height,
+          0, 0,
+          dimension.width, dimension.height
+        );
+        
+        blocos.push(canva);
+        idCelula+=2;
+      }
+    }
+    
+    resolve(blocos);
+  }
+  })
 }
 
 async function getImage(width, height) {
@@ -233,6 +202,11 @@ function verificarVitoria() {
 
 
 async function iniciarJogo(){
+  ativarCarregamento();
+  jogo.img = await getImage(tabuleiro.offsetWidth, tabuleiro.offsetHeight);
+  await montarBaralho();
+  await montarTabuleiro();
+  desativarCarregamento();
 
   baralho.addEventListener("dragover", (e) => {
     e.preventDefault();
@@ -243,45 +217,33 @@ async function iniciarJogo(){
 
     const id = e.dataTransfer.getData("text/plain");
     const bloco = document.getElementById(id);
-atualizar_tela
+
     baralho.appendChild(bloco);
   });
-  const uploader = document.querySelector(".uploader");
-  uploader.addEventListener("change", () => atualizar_tela())
-  atualizar_tela()
-
-  
-  // resolverJogo();
 }
-async function atualizar_tela() {
+
+async function atualizarTela() {
   ativarCarregamento();
-  jogo.img = await getImage(tabuleiro.offsetWidth, tabuleiro.offsetHeight);
   limparBaralho();
   limparTabuleiro();
+  //jogo.img = await getImage(tabuleiro.offsetWidth, tabuleiro.offsetHeight);
   await montarBaralho();
   await montarTabuleiro();
   desativarCarregamento();
 }
 
-
-function resolverJogo() {
-  const celulas = document.querySelectorAll(".bloco-tabuleiro");
-
-  celulas.forEach((celula) => {
-    const idEsperado = Number(celula.id) - 1;
-    const bloco = document.getElementById(idEsperado);
-
-    if (bloco) {
-      celula.appendChild(bloco);
-    }
-  });
-}
-
 document.addEventListener("DOMContentLoaded", iniciarJogo);
+
 document.querySelector("#nivel").addEventListener("change", async (e) => {
   const nivelSelecionado = e.target.value;
   if(nivelSelecionado !== nivelAtual) {
-    atualizar_tela()
+    ativarCarregamento();
+    nivelAtual = nivelSelecionado;
+    limparBaralho();
+    limparTabuleiro();
+    await montarBaralho();
+    await montarTabuleiro();
+    desativarCarregamento();
   }
 });
 

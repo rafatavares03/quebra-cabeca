@@ -80,7 +80,7 @@ header {
 .header-container {
     border-top: 20px;
     display: flex;
-    justify-content:space-between;
+    justify-content: center;
     width: 100%;
     max-width: 1300px;
     position: relative;
@@ -100,11 +100,15 @@ header {
     color: #eee;
 }
 .nivel {
+    position: absolute;
+    right: 20px;
     outline: 0;
     font-family: inherit;
     font-size: 16px;
     text-align: center;
-    border-left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
     border-radius: 30px;
     padding: 5px 10px;
 }
