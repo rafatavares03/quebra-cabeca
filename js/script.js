@@ -61,22 +61,9 @@ function recortarImagem(imgSRC) {
 }
 
 async function getImage(width, height) {
-  const uploader = document.querySelector(".uploader");
-  const curFiles = uploader.files;
-  
-  return new Promise(async (resolve) => {
-    const img = new Image();
-    let url;
-    if (curFiles.length === 0) {
-      url = `https://picsum.photos/${width}/${height}`;
-      const response = await fetch(url);
-      resolve(response.url);
-    } else {
-      url = URL.createObjectURL(curFiles[0]);
-      img.onload = () => resolve(url);
-    }
-    img.src = url;
-  });
+  const url = `https://picsum.photos/${width}/${height}`;
+  const response = await fetch(url);
+  return response.url;
 }
 
 function ativarCarregamento() {
@@ -215,11 +202,7 @@ function verificarVitoria() {
 
 
 async function iniciarJogo(){
-  ativarCarregamento();
-  jogo.img = await getImage(tabuleiro.offsetWidth, tabuleiro.offsetHeight);
-  await montarBaralho();
-  await montarTabuleiro();
-  desativarCarregamento();
+  atualizarTela(true);
 
   baralho.addEventListener("dragover", (e) => {
     e.preventDefault();
@@ -235,11 +218,30 @@ async function iniciarJogo(){
   });
 }
 
-async function atualizarTela() {
+async function ajustarTelaImgPersonalizado() {
+  const img = new Image();
+  img.src = jogo.img;
+
+  await new Promise((resolve) => {
+    img.onload = resolve;
+  });
+
+  tabuleiro.style.width = img.width + "px";
+  tabuleiro.style.height = img.height + "px";
+}
+
+async function atualizarTela(novaImagem) {
   ativarCarregamento();
   limparBaralho();
   limparTabuleiro();
-  //jogo.img = await getImage(tabuleiro.offsetWidth, tabuleiro.offsetHeight);
+  if(novaImagem) {
+    tabuleiro.style.width = '';
+    tabuleiro.style.height = '';
+    if(jogo.img !== null && jogo.img.startsWith("blob:")) {
+      URL.revokeObjectURL(jogo.img);
+    }
+    jogo.img = await getImage(tabuleiro.offsetWidth, tabuleiro.offsetHeight);
+  }
   await montarBaralho();
   await montarTabuleiro();
   desativarCarregamento();
@@ -250,13 +252,8 @@ document.addEventListener("DOMContentLoaded", iniciarJogo);
 document.querySelector("#nivel").addEventListener("change", async (e) => {
   const nivelSelecionado = e.target.value;
   if(nivelSelecionado !== nivelAtual) {
-    ativarCarregamento();
     nivelAtual = nivelSelecionado;
-    limparBaralho();
-    limparTabuleiro();
-    await montarBaralho();
-    await montarTabuleiro();
-    desativarCarregamento();
+    atualizarTela(false);
   }
 });
 
@@ -271,8 +268,24 @@ document.querySelectorAll(".modal").forEach((modal) => {
 document.querySelector("#trocar-img").addEventListener("click", () => {
   const modal = document.querySelector(".trocar-img-modal");
   modal.classList.remove('hide');
-})
+});
 
+document.querySelector("#uploader").addEventListener("change", async () => {
+  const arquivo = event.target.files[0];
+  if(!arquivo) return;
+
+  const url = URL.createObjectURL(arquivo);
+  if(jogo.img !== null && jogo.img.startsWith("blob:")) {
+    URL.revokeObjectURL(jogo.img);
+  }
+  jogo.img = url;
+  await ajustarTelaImgPersonalizado();
+  atualizarTela();
+
+  const modal = document.querySelector(".trocar-img-modal");
+  modal.classList.add('hide');
+})
+/*
 document.querySelector("#resultado-modal").addEventListener("click", (e) => {
   const modal = document.querySelector("#resultado-modal");
   if(e.target === modal) {
@@ -280,7 +293,8 @@ document.querySelector("#resultado-modal").addEventListener("click", (e) => {
     resultado.innerHTML = '';
     modal.classList.add('hide');
   }
-})
+});
+*/
 
 document.addEventListener("dragstart", () => {
   arrastando = true;
