@@ -98,9 +98,18 @@ function mostrarResultado(texto) {
   h1.innerHTML = "Parabéns, você venceu!"
   const img = document.createElement('img');
   img.src = jogo.img
+  const button = document.createElement('input');
+  button.setAttribute('type', 'button');
+  button.setAttribute('id', 'jogar-novamente')
+  button.setAttribute('value', 'JOGAR NOVAMENTE');
+  button.addEventListener('click', () => {
+    atualizarTela(true);
+    modal.classList.add('hide');
+  });
 
   resultadoContainer.appendChild(h1);
   resultadoContainer.appendChild(img);
+  resultadoContainer.appendChild(button);
   modal.classList.remove('hide');
 }
 
